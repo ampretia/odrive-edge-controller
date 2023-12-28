@@ -1,0 +1,10 @@
+class Protocol:
+
+    class PositionUpdates:
+    # Vehicle position updates
+        LOCALIZATION_POSITION_UPDATE = 0x27
+        LOCALIZATION_TRANSITION_UPDATE = 0x29
+        LOCALIZATION_INTERSECTION_UPDATE = 0x2a
+        VEHICLE_DELOCALIZED = 0x2b
+        SET_OFFSET_FROM_ROAD_CENTER = 0x2c
+        OFFSET_FROM_ROAD_CENTER_UPDATE = 0x2d

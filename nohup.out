@@ -1,0 +1,80 @@
+2023-12-23 17:20:48.843 | INFO     | __main__:main_loop:84 - Looking for cars....
+2023-12-23 17:20:54.635 | INFO     | __main__:main_loop:95 - [Anki Overdrive car Free Wheel | D8:AB:DB:F3:36:A9]
+2023-12-23 17:20:54.637 | INFO     | __main__:main_loop:96 - [InputDevice('/dev/input/event1'), InputDevice('/dev/input/event0')]
+2023-12-23 17:20:54.640 | INFO     | __main__:main_loop:102 - [Player 0 | device /dev/input/event1, name "USB Gamepad ", phys "usb-3f980000.usb-1.5/input0" | Anki Overdrive car Free Wheel | D8:AB:DB:F3:36:A9]
+Traceback (most recent call last):
+  File "/home/matthew/github.com/anki-overdrive-windows-sdk/manual.py", line 115, in <module>
+    asyncio.run(main_loop())
+  File "/home/matthew/.pyenv/versions/3.11.7/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/home/matthew/.pyenv/versions/3.11.7/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matthew/.pyenv/versions/3.11.7/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/matthew/github.com/anki-overdrive-windows-sdk/manual.py", line 105, in main_loop
+    await p.connect()
+  File "/home/matthew/github.com/anki-overdrive-windows-sdk/manual.py", line 23, in connect
+    car_name = await self.car.async_connect()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matthew/github.com/anki-overdrive-windows-sdk/anki_sdk/cars.py", line 202, in async_connect
+    await self.client.connect()
+  File "/home/matthew/.cache/pypoetry/virtualenvs/anki-overdrive-windows-sdk-enIHd-lS-py3.11/lib/python3.11/site-packages/bleak/__init__.py", line 605, in connect
+    return await self._backend.connect(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matthew/.cache/pypoetry/virtualenvs/anki-overdrive-windows-sdk-enIHd-lS-py3.11/lib/python3.11/site-packages/bleak/backends/bluezdbus/client.py", line 249, in connect
+    assert_reply(reply)
+  File "/home/matthew/.cache/pypoetry/virtualenvs/anki-overdrive-windows-sdk-enIHd-lS-py3.11/lib/python3.11/site-packages/bleak/backends/bluezdbus/utils.py", line 22, in assert_reply
+    raise BleakDBusError(reply.error_name, reply.body)
+bleak.exc.BleakDBusError: [org.bluez.Error.Failed] Software caused connection abort
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/sre_parse.py", line 236, in __next
+    char = self.decoded_string[index]
+IndexError: string index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/matthew/.local/bin/poetry", line 5, in <module>
+    from poetry.console.application import main
+  File "/home/matthew/.local/share/pypoetry/venv/lib/python3.9/site-packages/poetry/console/application.py", line 19, in <module>
+    from poetry.__version__ import __version__
+  File "/home/matthew/.local/share/pypoetry/venv/lib/python3.9/site-packages/poetry/__version__.py", line 5, in <module>
+    from poetry.utils._compat import metadata
+  File "/home/matthew/.local/share/pypoetry/venv/lib/python3.9/site-packages/poetry/utils/_compat.py", line 20, in <module>
+    import importlib_metadata as metadata
+  File "/home/matthew/.local/share/pypoetry/venv/lib/python3.9/site-packages/importlib_metadata/__init__.py", line 6, in <module>
+    import json
+  File "/usr/lib/python3.9/json/__init__.py", line 106, in <module>
+    from .decoder import JSONDecoder, JSONDecodeError
+  File "/usr/lib/python3.9/json/decoder.py", line 5, in <module>
+    from json import scanner
+  File "/usr/lib/python3.9/json/scanner.py", line 11, in <module>
+    NUMBER_RE = re.compile(
+  File "/usr/lib/python3.9/re.py", line 252, in compile
+    return _compile(pattern, flags)
+  File "/usr/lib/python3.9/re.py", line 304, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "/usr/lib/python3.9/sre_compile.py", line 764, in compile
+    p = sre_parse.parse(p, flags)
+  File "/usr/lib/python3.9/sre_parse.py", line 948, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "/usr/lib/python3.9/sre_parse.py", line 443, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "/usr/lib/python3.9/sre_parse.py", line 511, in _parse
+    sourceget()
+  File "/usr/lib/python3.9/sre_parse.py", line 256, in get
+    self.__next()
+  File "/usr/lib/python3.9/sre_parse.py", line 238, in __next
+    self.next = None
+KeyboardInterrupt
+2023-12-23 17:21:41.963 | INFO     | __main__:main_loop:84 - Looking for cars....
+2023-12-23 17:21:47.645 | INFO     | __main__:main_loop:95 - [Anki Overdrive car Free Wheel | D8:AB:DB:F3:36:A9]
+2023-12-23 17:21:47.647 | INFO     | __main__:main_loop:96 - [InputDevice('/dev/input/event1'), InputDevice('/dev/input/event0')]
+2023-12-23 17:21:47.649 | INFO     | __main__:main_loop:102 - [Player 0 | device /dev/input/event1, name "USB Gamepad ", phys "usb-3f980000.usb-1.5/input0" | Anki Overdrive car Free Wheel | D8:AB:DB:F3:36:A9]
+2023-12-23 17:21:49.461 | INFO     | __main__:main_loop:108 - PLAY...
+Connected to Free Wheel
+2023-12-23 17:26:03.789 | INFO     | __main__:main_loop:87 - Looking for cars....
+2023-12-23 17:26:09.427 | ERROR    | __main__:main_loop:90 - No cars found..
