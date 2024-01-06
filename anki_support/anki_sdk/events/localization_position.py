@@ -23,6 +23,9 @@ class LocalalizationPosition(Event):
 
         return self
 
+    def get_speed(self):
+        return self.speed
+
     def get_road_piece_id(self):
         return self.roadPieceId
 

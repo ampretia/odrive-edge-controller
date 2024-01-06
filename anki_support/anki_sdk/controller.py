@@ -1,5 +1,6 @@
 import struct
-from .car import Car, CommandList
+from .car import Car
+from .protocol import Protocol
 
 
 class Controller:
@@ -15,7 +16,7 @@ class Controller:
         self.accel = 0
         self.light = (0, 0, 0)
 
-    async def set_speed(self, speed: int, accel: int | None = 1000):
+    async def set_speed(self, speed: int, accel: int | None = 1000, limit: bool = True):
         """Set the vehicle speed
 
         Args:
@@ -24,9 +25,18 @@ class Controller:
         """
         if accel is None:
             accel = 1000
-        command = struct.pack("<BHHB", CommandList.SET_SPEED, speed, accel, 0x01)
+
+        speed_limit = 0x01 if limit else 0x0
+
+        command = struct.pack(
+            "<BHHB", Protocol.CommandList.SET_SPEED, speed, accel, speed_limit
+        )
         self.speed = speed
         self.accel = accel
+        await self.car.send_command(command)
+
+    async def turn(self, type, trigger):
+        command = struct.pack("<BBB", Protocol.CommandList.TURN, type, trigger)
         await self.car.send_command(command)
 
     async def set_lane(self, offset: float = 0.0):
@@ -35,7 +45,7 @@ class Controller:
         Args:
             offset (float): Offset from lane. Defaults to 0.0.
         """
-        command = struct.pack("<Bf", CommandList.RESET_LANE, offset)
+        command = struct.pack("<Bf", Protocol.CommandList.RESET_LANE, offset)
         await self.car.send_command(command)
 
     async def change_lane(self, offset: float):
@@ -48,7 +58,7 @@ class Controller:
             offset (float): How much the car should move.
         """
         command = struct.pack(
-            "<BHHf", CommandList.CHANGE_LANE, self.speed, self.accel, offset
+            "<BHHf", Protocol.CommandList.CHANGE_LANE, self.speed, self.accel, offset
         )
         await self.car.send_command(command)
 

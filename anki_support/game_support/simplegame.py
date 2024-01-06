@@ -1,7 +1,7 @@
 from ..anki_sdk import Car, Controller
 from loguru import logger
 import sys
-import asyncio 
+import asyncio
 
 
 from .game import Game
@@ -9,8 +9,7 @@ from .player import Player
 
 
 class SimpleGame:
-
-    def __init__(self,car_list):
+    def __init__(self, car_list):
         self.players = []
         self.car_list = car_list
 
@@ -26,7 +25,6 @@ class SimpleGame:
             _ = asyncio.create_task(self.main_loop())
             logger.info("wait")
             await self.condition.wait()
-
 
     async def main_loop(self):
         logger.info("Finding gamepads")

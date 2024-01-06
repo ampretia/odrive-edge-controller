@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "anki-overdrive-windows-sdk"
+name = "ampretia-anki-overdrive"
 version = "0.1.0"
 description = ""
 authors = ["MBW"]
@@ -12,6 +12,8 @@ bleak = "^0.21.1"
 requests = "^2.31.0"
 evdev = "^1.6.1"
 loguru = "^0.7.2"
+gpiozero = "^2.0"
+pigpio = "^1.78"
 
 
 [tool.poetry.group.dev.dependencies]

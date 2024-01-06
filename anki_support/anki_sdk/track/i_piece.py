@@ -5,10 +5,45 @@
 #  *
 #  * @since 1.0.0
 #  */
-class IPiece: 
+from enum import Enum, auto
 
+from abc import ABC, abstractmethod
+from typing import Self, Any
+
+
+class Connection(Enum):
+    PREVIOUS = auto()
+    NEXT = auto()
+    NORTH = auto()
+    SOUTH = auto()
+    WEST = auto()
+    EAST = auto()
+
+
+class IPiece(ABC):
     def __init__(self):
         pass
+
+    @abstractmethod
+    def get_track_id(self):
+        pass
+
+    @abstractmethod
+    def set_connection(self, dir: Connection, piece: Self):
+        pass
+
+    @abstractmethod
+    def get_connection(self, dir: Connection) -> Self | None:
+        pass
+
+    @abstractmethod
+    def set_layout_id(self, layout_id: int):
+        pass
+
+    @abstractmethod
+    def get_layout_id(self) -> int:
+        pass
+
 #     /**
 #      * Matrix of locations. Each location is a specific position on the piece that triggers an event when a vehicle
 #      * detects it with its sensor.
