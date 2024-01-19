@@ -2,16 +2,13 @@ from .abstractevent import Event
 import struct
 
 
-class LocalalizationTransition(Event):
+class LocalizationTransition(Event):
     def build(self):
-        pack_format = "<BBfBBHBBBBBB"
-
-        #[11 29 00 00 A4 70 6B C2 00 81 46 00 F9 00 49 00 1E 25 ]
-        # 2 2 4 2 2 4 2 2 2 2 2 2 
+        pack_format = "<BBfBBHbBBBBB"
 
         (
-            self.roadPieceId,           # uint8  2bytes
-            self.preRoadPieceId,         # 3
+            self.roadPieceId,  # uint8  2bytes
+            self.preRoadPieceId,  # 3
             self.offsetFromRoadCenter,
             self.lastRecvLaneChangeCmdId,
             self.lastrExecLaneChangeCmdId,
@@ -33,7 +30,7 @@ class LocalalizationTransition(Event):
         return self.rightWheelDist
 
     def __str__(self):
-        return f"Transition {self.roadPieceId}/{self.preRoadPieceId} Offset={self.offsetFromRoadCenter}mm L={self.leftWheelDist} R={self.rightWheelDist} {self.log()}"
+        return f"[LT] PieceID={self.preRoadPieceId}>>{self.roadPieceId} Offset={self.offsetFromRoadCenter}mm L={self.leftWheelDist} R={self.rightWheelDist} followDrift={self.followDriftPixels}"
 
     def __repr__(self):
         return self.__str__()

@@ -1,6 +1,11 @@
 import struct
-from .car import Car
+import asyncio
+from anki_support.anki_sdk.car_position import CarPosition
+from .events import IObserver, LocalizationPosition, LocalizationTransition
+from .track import Layout
+from .car_interface import ICar
 from .protocol import Protocol
+from loguru import logger
 
 
 class Controller:
@@ -10,11 +15,61 @@ class Controller:
         carClass (carClass): Car to be controlled
     """
 
-    def __init__(self, car: Car):
-        self.car: Car = car
+    def __init__(self, car: ICar):
+        self.car: ICar = car
         self.speed = 0
         self.accel = 0
         self.light = (0, 0, 0)
+
+    def set_layout(self, layout: Layout):
+        self.position = CarPosition(layout, self.car)
+
+    async def live_tracking(self) -> None:
+        class LiveProxy(IObserver):
+            def __init__(self, ctrl):
+                self.ctrl = ctrl
+
+            async def run(self):
+                await self.ctrl.car.start_notify(self)
+
+            async def update(self, event):
+                if type(event) is LocalizationPosition:
+                    self.ctrl.position.position(event)
+                elif type(event) is LocalizationTransition:
+                    self.ctrl.position.transistion(event)
+
+                logger.info(self.ctrl.position)
+
+        await LiveProxy(self).run()
+
+    async def move_start(self) -> None:
+        moved = asyncio.Condition()
+
+        class proxy(IObserver):
+            def __init__(self, ctrl):
+                self.ctrl = ctrl
+
+            async def run(self):
+                await self.ctrl.set_speed(400)
+                await self.ctrl.car.start_notify(self)
+
+            async def update(self, event):
+                if type(event) is LocalizationPosition:
+                    if event.get_road_piece_id() == 34:
+                        logger.info("Got to what I think is the finish")
+                        await self.ctrl.set_speed(0, 2000)
+                        self.ctrl.position.set_finish()
+                        logger.info(self.ctrl.position)
+                        await self.ctrl.car.stop_notify(self)
+                        async with moved:
+                            moved.notify()
+
+        _ = asyncio.create_task(proxy(self).run())
+        async with moved:
+            await moved.wait()
+
+    # async def update(self, event) -> None:
+    #     logger.info(event)
 
     async def set_speed(self, speed: int, accel: int | None = 1000, limit: bool = True):
         """Set the vehicle speed
@@ -102,6 +157,7 @@ class Controller:
                 LIGHT_ENGINE:        3
         """
         message = self.__encodeLightChange(value)
+        logger.info("sending light command")
         await self.car.send_command(bytes(message))
 
     def __encodeEngineLightChange(self, r, g, b):

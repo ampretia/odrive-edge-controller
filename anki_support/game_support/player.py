@@ -2,7 +2,7 @@ from loguru import logger
 from evdev import InputDevice, categorize, ecodes, list_devices, KeyEvent
 from threading import Timer
 from ..anki_sdk import Controller
-from ..anki_sdk.events import IObserver, Event, OffTrack,LocalalizationPosition
+from ..anki_sdk.events import IObserver, Event, OffTrack,LocalizationPosition, LocalizationTransition
 from enum import Enum
 import asyncio
 
@@ -42,10 +42,14 @@ class Player(IObserver):
 
         if type(event) is OffTrack:
             logger.info(f"{self.name} {self.car_name}:: Off Track Event")
-        elif type(event) is LocalalizationPosition:
-            logger.info(f"{self.name} {self.car_name}:: Speed {event.get_speed()}")
-        else:
+        elif type(event) is LocalizationPosition:
+            # logger.info(f"{self.name} {self.car_name}:: Speed {event.get_speed()}")
             logger.info(f"{self.car_name} {event}")
+        elif type(event) is LocalizationTransition:
+            # logger.info(f"{self.name} {self.car_name}:: Speed {event.get_speed()}")
+            logger.info(f"{self.car_name} {event}")
+        # else:
+        #     logger.info(f"{self.car_name} {event}")
             
             
 

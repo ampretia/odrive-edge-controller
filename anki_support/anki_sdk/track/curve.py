@@ -1,4 +1,4 @@
-from .piece import Piece
+from .piece import Piece, Type
 
 
 class Curve(Piece):
@@ -23,4 +23,5 @@ class Curve(Piece):
                 [32, 33, 34],
                 [35, 36, 37],
             ],
+            Type.CURVE,
         )

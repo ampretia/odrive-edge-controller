@@ -51,6 +51,9 @@ class Protocol:
         # Messages for checking vehicle version info
         VERSION_REQUEST: bytes = 0x18
         VERSION_RESPONSE: bytes = 0x19
+
+        BATTERY_REQUEST: bytes = 0x1a
+        BATTERY_RESPONSE: bytes = 0x1b
         # Lights
         SET_LIGHTS: bytes = 0x1D
         LIGHTS_PATTERN: bytes = 0x33

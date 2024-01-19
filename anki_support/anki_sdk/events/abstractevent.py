@@ -7,20 +7,23 @@ class Event:
         self.size = size
         self.msgId = msgId
         self.payload = payload
-        self.vehicleId = vehicleId
+        self.name = vehicleId
         
+    def build(self):
+        return self
 
     def log(self) -> str:
         
         text = "["
         for v in list(self.payload):
             text += f"{v:02X} "
-        
+
+        text = text.strip()        
         text += "]"
         return text
 
     def __str__(self):
-        return f"({self.size:02X}) {self.msgId:02X} {self.log()}"
+        return f"[{self.name}] Uncategorised Event:: size={self.size:02X} msgid={self.msgId:02X} {self.log()}"
 
     def __repr__(self):
         return self.__str__()

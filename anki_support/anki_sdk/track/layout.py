@@ -1,4 +1,5 @@
 from .i_piece import IPiece, Connection
+from .finish import Finish
 from loguru import logger
 
 
@@ -9,20 +10,24 @@ class Layout:
         # iterate over the pieces to create whole track
         try:
             for i, piece in enumerate(self._list):
-               
-                next = i + 1 if i < (len(self._list)-1) else 0
-                prev = i - 1 if i > 0 else (len(self._list)-1)
+                next = i + 1 if i < (len(self._list) - 1) else 0
+                prev = i - 1 if i > 0 else (len(self._list) - 1)
 
                 piece.set_layout_id(i)
                 piece.set_connection(Connection.NEXT, self._list[next])
                 piece.set_connection(Connection.PREVIOUS, self._list[prev])
 
-                self._list[i] = piece               
+                self._list[i] = piece
 
             logger.info(self._list)
         except Exception as e:
             logger.error(e)
             raise e
+
+    def get_finish(self):
+        for i in range(len(self._list)):
+            if type(self._list[i]) is Finish:
+                return self._list[i]
 
     def get_by_index(self, i: int):
         return self._list[i]
@@ -43,11 +48,9 @@ class Layout:
     def __repr__(self):
         return self.__str__()
 
-    # def get_by_position(self, )
 
-
-# class Position:
-#     def __init__(self):
-#         self._track_index = _track_index
-#         self._position = _position
-#         self._offset = _offset
+class Position:
+    def __init__(self):
+        self._track_index = _track_index
+        self._position = _position
+        self._offset = _offset

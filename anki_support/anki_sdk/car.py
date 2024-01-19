@@ -1,17 +1,26 @@
 import time as t
-
+from typing import Self
 import struct
 import bleak
 from loguru import logger
-
+from .controller import Controller
+from .car_interface import ICar
 from typing import List
 
 from .exceptions import NotConnected
 from .protocol import Protocol
-from .events import LocalalizationTransition, LocalalizationPosition, Event, IObserver, OffTrack
+from .events import (
+    LocalizationTransition,
+    LocalizationPosition,
+    Event,
+    IObserver,
+    OffTrack,
+    BatteryResponse,
+    VersionResponse,
+)
 
 
-class Car:
+class Car(IObserver, ICar):
     # Args:
     #    car_address (str): vehicle MAC-address
     #    cat_name (str): name
@@ -24,10 +33,15 @@ class Car:
         # connection status
         self.connected: bool = False
 
+        self.ble_notify_started: bool = False
+
         # tmp var
         self.debug = debug
         self.before = ""
         self.start_ping_time = None
+
+    def get_name(self) -> str:
+        return self.name
 
     # Get object as string
     def __str__(self):
@@ -49,15 +63,23 @@ class Car:
         else:
             raise NotConnected("Not connected to vehicle")
 
-    async def connect(self):
-        """Connect with car
+    async def get_controller(self):
+        await self.connect()
+        ctrl = Controller(self)
 
-        Returns:
-            bool: Connected
-        """
-        await self.client.connect()
-        self.connected: bool = True
-        await self.send_command(b"\x90\x01\x01")
+        return ctrl
+
+    async def connect(self):
+        if not self.connected:
+            await self.client.connect()
+            self.connected: bool = True
+            await self.send_command(b"\x90\x01\x01")
+
+        if not self.ble_notify_started:
+            logger.info("Starting BLE event notifications")
+            await self.client.start_notify(Protocol.UUID.READ_UUID, self._ble_notify)
+            self.ble_notify_started = True
+
         return self.name
 
     async def ping(self):
@@ -68,22 +90,22 @@ class Car:
         """
         command = struct.pack("<BBB", Protocol.CommandList.PING_REQUEST, 0x01, 0x01)
         await self.send_command(command)
-        self.start_ping_time: int = t.time_ns()
-        self.wait_ping: bool = True
-        while self.wait_ping:
-            t.sleep(0)
-        return self.start_ping_time
+        self.ping_time: int = t.time_ns()
+        # self.wait_ping: bool = True
+        # while self.wait_ping:
+        #     t.sleep(0)
+        # return self.start_ping_time
+
+    async def version(self):
+        command = struct.pack("<BBB", Protocol.CommandList.VERSION_REQUEST, 0x01, 0x01)
+        await self.send_command(command)
+
+    async def battery(self):
+        command = struct.pack("<BBB", Protocol.CommandList.BATTERY_REQUEST, 0x01, 0x01)
+        await self.send_command(command)
 
     # disconnect and slow down the car
     async def disconnect(self, stop_car: bool = True):
-        """Disconnect from vehicle
-
-        Args:
-            stop_car (bool): Forcestop car.
-
-        Returns:
-            worked (bool): Disconnect worked.
-        """
         try:
             if self.client.is_connected:
                 if stop_car:
@@ -97,52 +119,73 @@ class Car:
                     struct.pack("<BB", Protocol.CommandList.DISCONNECT, 0x01)
                 )
                 self.connected = False
+                
                 await self.client.disconnect()
+                self.ble_notify_started = False
                 return True
-            else:
-                raise NotConnected("Car not connected")
         except KeyboardInterrupt:
             return False
 
     def build_message(self, data):
+        evt = None
+
         match data[1]:
             case 0x29:
-                return LocalalizationTransition(data[0], data[1], data[2:], "").build()
+                evt = LocalizationTransition(
+                    data[0], data[1], data[2:], self.name
+                ).build()
             case 0x27:
-                return LocalalizationPosition(data[0], data[1], data[2:], "").build()
+                evt = LocalizationPosition(
+                    data[0], data[1], data[2:], self.name
+                ).build()
             case 0x2B:
-                return OffTrack().build()
+                evt = OffTrack().build()
+            case Protocol.CommandList.PING_RESPONSE:
+                self.ping_time = t.time_ns() - self.ping_time
+                logger.info(
+                    "Ping time {}  response {}", self.ping_time, self._log(data)
+                )
+            case Protocol.CommandList.VERSION_RESPONSE:
+                evt = VersionResponse(data[0], data[1], data[2:], self.name).build()
+                logger.info(evt)
+
+            case Protocol.CommandList.BATTERY_RESPONSE:
+                evt = BatteryResponse(data[0], data[1], data[2:], self.name).build()
+                logger.info(evt)
             case _:
-                return Event(data[0], data[1], data[2:], "")
+                evt = Event(data[0], data[1], data[2:], self.name).build()
+                logger.info(evt)
+
+        return evt
 
     # Start to receive notify
     async def start_notify(self, observer):
-        """Starts the notification callback"""
-
-        async def notify(sender, data: bytearray):
-            if data == self.before:
-                return
-            self.before = data
-
-            msg = self.build_message(data)
-            if msg:
-                await self._notify(msg)
-
         self._attach(observer)
-        if len(self._observers) == 1:
-            logger.info("Starting BLE event notifications")
-            await self.client.start_notify(Protocol.UUID.READ_UUID, notify)
-        else:
-            logger.info("BLE Notification already setup")
 
+    #
     async def stop_notify(self, observer):
-        """Stops the notification callback"""
-        if self.connected:
-            self._detach(observer)
+        self._detach(observer)
 
-            # if last observer remove then stop notifications on BLE characteristic
-            if len(self._observers) == 0:
-                await self.client.stop_notify(Protocol.UUID.READ_UUID)
+    def _log(self, data) -> str:
+        text = "["
+        for v in list(data):
+            text += f"{v:02X} "
+
+        text = text.strip()
+        text += "]"
+        return text
+
+    # BLE callback
+    async def _ble_notify(self, sender, data: bytearray):
+        logger.debug(f"BLE - {sender} {self._log(data)}")
+        if data == self.before:
+            return
+
+        self.before = data
+
+        msg = self.build_message(data)
+        if msg:
+            await self._notify(msg)
 
     def _get_car_name(advertised):
         data_table: list = advertised.manufacturer_data[61374]
@@ -172,7 +215,11 @@ class Car:
         else:
             return "Unknown"
 
-    async def scanner(active: bool = True):
+    async def update(self, event) -> None:
+        logger.info(f"{event}")
+
+    @staticmethod
+    async def scanner(active: bool = True) -> List[Self]:
         device_list = await bleak.BleakScanner.discover(return_adv=True)
         result: list = []
         if len(device_list) == 0:

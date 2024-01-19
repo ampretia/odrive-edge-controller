@@ -1,25 +1,19 @@
 from loguru import logger
 import asyncio
 
-from ..anki_sdk import Controller
+from ..anki_sdk import Controller, Car
 from ..anki_sdk.events import (
     IObserver,
-    LocalalizationPosition,
-    LocalalizationTransition,
+    LocalizationPosition,
+    LocalizationTransition,
 )
 
 from ..anki_sdk.track import Curve, Straight, Start, Finish, Layout
 
 
 class TrackScanner(IObserver):
-    # private _callback: Function
-    # private _locations: LocalizationPositionUpdate[]
-    # private _pieces: IPiece[]
-    # private _round: number
-    # private _scanning: boolean
-    # private _vehicle: IVehicle
 
-    def __init__(self, car_list):
+    def __init__(self, car_list: list[Car]):
         self.scanning = False
         self.locations = []
         self.pieces = []
@@ -27,7 +21,7 @@ class TrackScanner(IObserver):
         self.car_list = car_list
 
     async def update(self, event) -> None:
-        if type(event) is LocalalizationTransition and len(self.locations) > 0:
+        if type(event) is LocalizationTransition and len(self.locations) > 0:
             position = self.locations[0]
             transition = event
             piece = self.createPiece(position, transition)
@@ -45,7 +39,7 @@ class TrackScanner(IObserver):
                 self.pieces.append(piece)
 
             self.locations = []
-        elif type(event) is LocalalizationPosition:
+        elif type(event) is LocalizationPosition:
             logger.info(f"Appending  {event}")
             self.locations.append(event)
 
@@ -57,7 +51,7 @@ class TrackScanner(IObserver):
         async with self.condition:
             _ = asyncio.create_task(self.main_loop())
             await self.condition.wait()
-
+            await self.scan_car.disconnect()
             return Layout(self.pieces)
 
     async def main_loop(self):
@@ -70,10 +64,10 @@ class TrackScanner(IObserver):
 
         await self.controller.set_speed(400, 200)
 
-        logger.info("Scannig...")
+        logger.info("Scanning...")
 
     def createPiece(
-        self, position: LocalalizationPosition, transition: LocalalizationTransition
+        self, position: LocalizationPosition, transition: LocalizationTransition
     ):
         logger.info(f"Create Track Piece p={position} tr={transition}")
 
@@ -101,8 +95,8 @@ class TrackScanner(IObserver):
 
     def isStraight(
         self,
-        position: LocalalizationPosition,
-        transition: LocalalizationTransition,
+        position: LocalizationPosition,
+        transition: LocalizationTransition,
     ) -> bool:
         lr_diff = abs(
             transition.get_right_wheel_dist() - transition.get_left_wheel_dist()
@@ -114,13 +108,8 @@ class TrackScanner(IObserver):
             and (lr_diff == 0 or lr_diff == 1)
         )
 
-    def isCurve(self, transition: LocalalizationTransition) -> bool:
+    def isCurve(self, transition: LocalizationTransition) -> bool:
         return (
             abs(transition.get_right_wheel_dist() - transition.get_left_wheel_dist())
             > 1
         )
-
-
-# }
-
-# export{TrackScanner}

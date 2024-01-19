@@ -1,4 +1,4 @@
-from .piece import Piece
+from .piece import Piece, Type
 
 
 class Finish(Piece):
@@ -25,4 +25,5 @@ class Finish(Piece):
                 [28, 29],
                 [30, 31],
             ],
+            Type.FINISH,
         )

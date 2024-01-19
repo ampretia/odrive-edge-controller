@@ -1,23 +1,35 @@
 from .i_piece import IPiece, Connection
-
 from typing import List
+from enum import StrEnum
+
+
+class Type(StrEnum):
+    STRAIGHT = 'straight'
+    CURVE = 'curve'
+    START = 'start'
+    FINISH = 'finish'
 
 
 class Piece(IPiece):
-    def __init__(self, id: int, locations: List[List[int]]):
+    def __init__(self, id: int, locations: List[List[int]], type: Type):
         self._id = id
         self._locations = locations
         self._reversed = False
-        self._next: IPiece = None
-        self._previous: IPiece = None
         self._connections: dict[Connection, IPiece] = {}
         self._layout_id = -1
+        self._type = type
 
     def get_track_id(self):
         return self._id
 
+    def get_next(self):
+        return self.get_connection(Connection.NEXT)
+
+    def get_previous(self):
+        return self.get_connection(Connection.PREVIOUS)
+
     def __str__(self):
-        return f"{self.__class__} {self._id} {self._locations}"
+        return f"{self._layout_id} / {self._id} | {self._type}"
 
     def __repr__(self) -> str:
         return self.__str__()

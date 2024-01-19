@@ -1,4 +1,4 @@
-from .piece import Piece
+from .piece import Piece, Type
 
 
 class Straight(Piece):
@@ -22,5 +22,5 @@ class Straight(Piece):
                 [39, 40, 41],
                 [42, 43, 44],
                 [45, 46, 47],
-            ],
+            ],Type.STRAIGHT
         )

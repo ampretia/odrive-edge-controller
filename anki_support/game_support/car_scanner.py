@@ -2,6 +2,7 @@ from loguru import logger
 import sys
 from ..anki_sdk import Car
 
+
 class CarScanner:
     # private _callback: Function
     # private _locations: LocalizationPositionUpdate[]
@@ -13,7 +14,7 @@ class CarScanner:
     def __init__(self):
         pass
 
-    async def main_loop(self):
+    async def scan(self) -> list[Car]:
         logger.info("Looking for cars....")
         car_list = await Car.scanner()
         if len(car_list) == 0:

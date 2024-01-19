@@ -1,4 +1,4 @@
-from .piece import Piece
+from .piece import Piece, Type
 
 
 class Start(Piece):
@@ -25,4 +25,5 @@ class Start(Piece):
                 [14],
                 [15],
             ],
+            Type.START,
         )
