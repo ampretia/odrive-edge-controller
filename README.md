@@ -4,15 +4,7 @@
 
 | [Edge Controller](https://github.com/ampretia/odrive-edge-controller) | [Drive Game Site](https://github.com/ampretia/odrive-ui-site) |
 
-# ODrive
-
-> Ampretia does Anki Overdive
-
-
-https://heidloff.net/article/collision-prevention-anki-overdrive-cars-bluemix/
-
-https://github.com/IBM/object-detection-anki-overdrive-cars
-
+# *ODrive* - Ampretia does Anki Overdive
 
 ## Notice
 
