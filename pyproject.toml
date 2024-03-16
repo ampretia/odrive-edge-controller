@@ -14,6 +14,7 @@ evdev = "^1.6.1"
 loguru = "^0.7.2"
 gpiozero = "^2.0"
 pigpio = "^1.78"
+websockets = "^12.0"
 
 
 [tool.poetry.group.dev.dependencies]

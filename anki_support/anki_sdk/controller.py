@@ -1,6 +1,7 @@
 import struct
 import asyncio
 from anki_support.anki_sdk.car_position import CarPosition
+from anki_support.anki_sdk.i_netransport import ITransport
 from .events import IObserver, LocalizationPosition, LocalizationTransition
 from .track import Layout
 from .car_interface import ICar
@@ -23,8 +24,9 @@ class Controller:
 
     def set_layout(self, layout: Layout):
         self.position = CarPosition(layout, self.car)
+        self.position.set_finish()
 
-    async def live_tracking(self) -> None:
+    async def live_tracking(self, transport: ITransport) -> None:
         class LiveProxy(IObserver):
             def __init__(self, ctrl):
                 self.ctrl = ctrl
@@ -38,7 +40,8 @@ class Controller:
                 elif type(event) is LocalizationTransition:
                     self.ctrl.position.transistion(event)
 
-                logger.info(self.ctrl.position)
+                # logger.info(self.ctrl.position.to_dict())
+                await transport.send_position(self.ctrl.position.to_dict())
 
         await LiveProxy(self).run()
 

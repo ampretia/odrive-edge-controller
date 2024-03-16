@@ -4,10 +4,10 @@ from enum import StrEnum
 
 
 class Type(StrEnum):
-    STRAIGHT = 'straight'
-    CURVE = 'curve'
-    START = 'start'
-    FINISH = 'finish'
+    STRAIGHT = "straight"
+    CURVE = "curve"
+    START = "start"
+    FINISH = "finish"
 
 
 class Piece(IPiece):
@@ -27,6 +27,9 @@ class Piece(IPiece):
 
     def get_previous(self):
         return self.get_connection(Connection.PREVIOUS)
+
+    def to_dict(self):
+        return {"lid": self._layout_id, "type": self._type, "pieceid": self._id}
 
     def __str__(self):
         return f"{self._layout_id} / {self._id} | {self._type}"

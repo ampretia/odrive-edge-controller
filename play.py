@@ -2,18 +2,30 @@ from loguru import logger
 import traceback
 from anki_support import CarScanner, SimpleGame
 from anki_support.anki_sdk import Controller, Car
+from anki_support.anki_sdk.i_netransport import ITransport
 from anki_support.game_support import TrackLighting, TrackScanner
+import json
+
+
+class ConsoleTransport(ITransport):
+    def __init__(self):
+        pass
+
+    async def send_position(self, data):
+        logger.info(json.dumps(data))
 
 
 async def main():
     try:
         TrackLighting.Control.all_on()
+        
+        consoletr = ConsoleTransport()
 
         logger.info("Scanning for cars...")
         cs = CarScanner()
         car_list: list[Car] = await cs.scan()
         logger.info(car_list)
-               
+
         logger.info("Scanning track...")
         ts = TrackScanner(car_list)
         track = await ts.get_track()
@@ -33,8 +45,8 @@ async def main():
 
         await ctrl.set_speed(400, 400)
         logger.info("Good to run.....")
-        
-        await ctrl.live_tracking()
+
+        await ctrl.live_tracking(consoletr)
 
         # s = SimpleGame(car_list)
 

@@ -2,7 +2,7 @@ from .piece import Piece, Type
 
 
 class Curve(Piece):
-    def __init__(self, id: int):
+    def __init__(self, id: int, turn: str):
         super().__init__(
             id,
             [
@@ -25,3 +25,11 @@ class Curve(Piece):
             ],
             Type.CURVE,
         )
+
+        self.turn = turn
+
+    def to_dict(self):
+        return {"lid": self._id, "type": self._type, "turn": self.turn}
+
+    def __str__(self):
+        return f"{self._layout_id} / {self._id} | {self._type} | {self.turn}"

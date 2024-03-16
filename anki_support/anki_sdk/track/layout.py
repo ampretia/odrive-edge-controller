@@ -32,6 +32,11 @@ class Layout:
     def get_by_index(self, i: int):
         return self._list[i]
 
+    def to_dict(self):
+        data = {"name": "layout"}
+        data["track"] = [piece.to_dict() for piece in self._list]
+        return data
+
     def __str__(self):
         s = "\n"
         for i, piece in enumerate(self._list):

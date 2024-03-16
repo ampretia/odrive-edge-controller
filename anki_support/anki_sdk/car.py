@@ -43,6 +43,9 @@ class Car(IObserver, ICar):
     def get_name(self) -> str:
         return self.name
 
+    def get_address(self)-> str:
+        return self.address
+
     # Get object as string
     def __str__(self):
         return f"Anki Overdrive car {self.name} | {self.address}"

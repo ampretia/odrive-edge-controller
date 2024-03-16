@@ -73,7 +73,7 @@ class TrackScanner(IObserver):
 
         if self.isCurve(transition):
             logger.info("..curve")
-            return Curve(position.get_road_piece_id())
+            return Curve(position.get_road_piece_id(), self.turn(transition))
 
         if self.isStraight(position, transition):
             logger.info("..straight")
@@ -107,6 +107,13 @@ class TrackScanner(IObserver):
             and not self.isFinish(position.get_road_piece_id())
             and (lr_diff == 0 or lr_diff == 1)
         )
+
+    def turn(self, transition: LocalizationTransition) -> str:
+        logger.info("right {} left {}",transition.get_right_wheel_dist(),transition.get_left_wheel_dist())
+        if (transition.get_right_wheel_dist() - transition.get_left_wheel_dist()) > 0:
+            return 'left'
+        else:
+            return 'right'
 
     def isCurve(self, transition: LocalizationTransition) -> bool:
         return (
