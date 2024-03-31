@@ -54,8 +54,7 @@ class Layout:
         return self.__str__()
 
 
-class Position:
-    def __init__(self):
-        self._track_index = _track_index
-        self._position = _position
-        self._offset = _offset
+# #    def __init__(self):
+        # self._track_index = _track_index
+        # self._position = _position
+        # self._offset = _offset

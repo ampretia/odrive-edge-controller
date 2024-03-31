@@ -313,6 +313,17 @@ pycodestyle = ">=2.11.0,<2.12.0"
 pyflakes = ">=3.1.0,<3.2.0"
 
 [[package]]
+name = "flatbuffers"
+version = "23.5.26"
+description = "The FlatBuffers serialization format for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "flatbuffers-23.5.26-py2.py3-none-any.whl", hash = "sha256:c0ff356da363087b915fde4b8b45bdda73432fc17cddb3c8157472eab1422ad1"},
+    {file = "flatbuffers-23.5.26.tar.gz", hash = "sha256:9ea1144cac05ce5d86e2859f431c6cd5e66cd9c78c558317c7955fb8d4c78d89"},
+]
+
+[[package]]
 name = "gpiozero"
 version = "2.0"
 description = "A simple interface to GPIO devices with Raspberry Pi"
@@ -380,6 +391,23 @@ files = [
     {file = "mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d"},
     {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
 ]
+
+[[package]]
+name = "odrive-wsprotocol"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = ">=3.11,<4.0"
+files = [
+    {file = "odrive_wsprotocol-0.1.0-py3-none-any.whl", hash = "sha256:03640662d7f02502a9e643f5301e5d2f5165575953dc2da50aeb77e012612f0c"},
+]
+
+[package.dependencies]
+flatbuffers = ">=23.5.26,<24.0.0"
+
+[package.source]
+type = "file"
+url = "../odrive_wsprotocol-0.1.0-py3-none-any.whl"
 
 [[package]]
 name = "packaging"
@@ -905,4 +933,4 @@ all = ["winrt-Windows.Foundation.Collections[all] (==2.0.0-beta.1)", "winrt-Wind
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "05237086f38304115781c182707810c2ce93075c504a1658e1a9a9630eda2d14"
+content-hash = "1cb14bc0071596a0a2194431b959d2af05e24236fcaab050da165632666822a9"

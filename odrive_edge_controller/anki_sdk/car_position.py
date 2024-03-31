@@ -1,4 +1,4 @@
-from anki_support.anki_sdk.track.layout import Layout
+from .track.layout import Layout
 from .events import LocalizationPosition, LocalizationTransition
 from .car_interface import ICar
 

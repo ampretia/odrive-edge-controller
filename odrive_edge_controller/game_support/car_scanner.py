@@ -16,7 +16,7 @@ class CarScanner:
 
     async def scan(self) -> list[Car]:
         logger.info("Looking for cars....")
-        car_list = await Car.scanner()
+        car_list = await Car.scanner(False)
         if len(car_list) == 0:
             logger.error("No cars found..")
             sys.exit(-1)

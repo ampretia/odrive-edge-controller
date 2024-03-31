@@ -6,7 +6,7 @@ from loguru import logger
 from .controller import Controller
 from .car_interface import ICar
 from typing import List
-
+import odrive_wsprotocol.CarScan as CarScan
 from .exceptions import NotConnected
 from .protocol import Protocol
 from .events import (
@@ -24,9 +24,18 @@ class Car(IObserver, ICar):
     # Args:
     #    car_address (str): vehicle MAC-address
     #    cat_name (str): name
-    def __init__(self, car_address: str, car_name: str, debug: bool = False):
+    def __init__(self, car_address: str, advertised, local_name):
         self.address: str = car_address
-        self.name = car_name
+
+        # parse out the name
+        self.name = Car._get_car_name(advertised)
+
+        bb = bytes(local_name, "utf-8")
+        battery = (bb[0] & 0xF0) >> 4
+        self.full = battery & 0x01 == 0x01
+        self.low = battery & 0x02 == 0x2
+        self.charging = battery & 0x04 == 0x04
+        self.version = struct.unpack("<H", bb[1:3])[0]
 
         self.client: bleak.BleakClient = bleak.BleakClient(self.address)
 
@@ -36,15 +45,23 @@ class Car(IObserver, ICar):
         self.ble_notify_started: bool = False
 
         # tmp var
-        self.debug = debug
         self.before = ""
         self.start_ping_time = None
 
     def get_name(self) -> str:
         return self.name
 
-    def get_address(self)-> str:
+    def get_address(self) -> str:
         return self.address
+
+    def get_scan_event(self, builder):
+        ca = builder.CreateString(self.address)
+        cn = builder.CreateString(self.name)
+        CarScan.Start(builder)
+        CarScan.AddAddress(builder, ca)
+        CarScan.AddName(builder, cn)
+
+        return CarScan.End(builder)
 
     # Get object as string
     def __str__(self):
@@ -122,7 +139,7 @@ class Car(IObserver, ICar):
                     struct.pack("<BB", Protocol.CommandList.DISCONNECT, 0x01)
                 )
                 self.connected = False
-                
+
                 await self.client.disconnect()
                 self.ble_notify_started = False
                 return True
@@ -234,13 +251,8 @@ class Car(IObserver, ICar):
 
             if device.name is not None:
                 if "Drive" in device.name:
-                    if active:
-                        if "P" not in device.name:
-                            c = Car(address, Car._get_car_name(advertised))
-                            result.append(c)
-                    else:
-                        c = Car(address, Car._get_car_name(advertised))
-                        result.append(c)
+                    c = Car(address, advertised, device.name)
+                    result.append(c)
 
         return result
 

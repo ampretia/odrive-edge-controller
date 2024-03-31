@@ -1,10 +1,11 @@
 [tool.poetry]
-name = "ampretia-anki-overdrive"
+name = "odrive-edge-controller"
 version = "0.1.0"
 description = ""
 authors = ["MBW"]
 license = "Apache-2.0"
 readme = "README.md"
+packages = [{include = "odrive_edge_controller"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
@@ -15,6 +16,8 @@ loguru = "^0.7.2"
 gpiozero = "^2.0"
 pigpio = "^1.78"
 websockets = "^12.0"
+odrive-wsprotocol = {path = "../odrive_wsprotocol-0.1.0-py3-none-any.whl"}
+
 
 
 [tool.poetry.group.dev.dependencies]

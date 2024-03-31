@@ -1,7 +1,7 @@
 import struct
 import asyncio
-from anki_support.anki_sdk.car_position import CarPosition
-from anki_support.anki_sdk.i_netransport import ITransport
+from .car_position import CarPosition
+from .i_netransport import ITransport
 from .events import IObserver, LocalizationPosition, LocalizationTransition
 from .track import Layout
 from .car_interface import ICar
